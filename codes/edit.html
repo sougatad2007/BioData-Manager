@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-card h2 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.05em;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+        }
+
+        .btn-blue {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            background: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-blue:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        #editForm {
+            display: none;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f59e0b;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .btn-orange {
+            padding: 15px 50px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            background: #f59e0b;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+            width: 100%;
+        }
+
+        .btn-orange:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-orange:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-notice {
+            background: #fef3c7;
+            border: 2px solid #fbbf24;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            color: #92400e;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 25px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Main Menu</a>
+        
+        <div class="content-card">
+            <h2>✏ Edit Student Data</h2>
+            <p class="subtitle">Load existing student record and update the information</p>
+            
+            <div class="alert" id="alert"></div>
+            
+            <div class="search-container">
+                <input type="text" id="searchName" placeholder="Enter student name to edit">
+                <button class="btn-blue" id="loadBtn">Load Data</button>
+            </div>
+
+            <form id="editForm">
+                <div class="info-notice">
+                    ℹ️ You can change the student's name. If changed, the old record will be updated.
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Student Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>College Name *</label>
+                        <input type="text" id="college" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Father's Name *</label>
+                        <input type="text" id="father" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mother's Name *</label>
+                        <input type="text" id="mother" required>
+                    </div>
+                    <div class="form-group">
+                        <label>10th Marks (%) *</label>
+                        <input type="number" id="marks10" required min="0" max="100" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>12th Marks (%) *</label>
+                        <input type="number" id="marks12" required min="0" max="100" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>10th School Name *</label>
+                        <input type="text" id="school10" required>
+                    </div>
+                    <div class="form-group">
+                        <label>12th School Name *</label>
+                        <input type="text" id="school12" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-orange" id="updateBtn">Update Student Record</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let currentName = '';
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type} active`;
+            setTimeout(() => {
+                alertDiv.classList.remove('active');
+            }, 5000);
+        }
+
+        document.getElementById('loadBtn').addEventListener('click', async function() {
+            const name = document.getElementById('searchName').value.trim();
+
+            if (!name) {
+                showAlert('Please enter a student name!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/students/${encodeURIComponent(name)}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentName = name;
+                    
+                    document.getElementById('name').value = data.name;
+                    document.getElementById('college').value = data.college;
+                    document.getElementById('father').value = data.father;
+                    document.getElementById('mother').value = data.mother;
+                    document.getElementById('marks10').value = data.marks10;
+                    document.getElementById('marks12').value = data.marks12;
+                    document.getElementById('school10').value = data.school10;
+                    document.getElementById('school12').value = data.school12;
+                    
+                    document.getElementById('editForm').style.display = 'block';
+                    showAlert('Student data loaded successfully! Make your changes below.', 'success');
+                } else {
+                    showAlert(data.error, 'error');
+                    document.getElementById('editForm').style.display = 'none';
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error');
+            }
+        });
+
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('updateBtn');
+            btn.disabled = true;
+            btn.textContent = 'Updating...';
+
+            const data = {
+                name: document.getElementById('name').value.trim(),
+                college: document.getElementById('college').value.trim(),
+                father: document.getElementById('father').value.trim(),
+                mother: document.getElementById('mother').value.trim(),
+                marks10: parseFloat(document.getElementById('marks10').value),
+                marks12: parseFloat(document.getElementById('marks12').value),
+                school10: document.getElementById('school10').value.trim(),
+                school12: document.getElementById('school12').value.trim()
+            };
+
+            try {
+                const response = await fetch(`${API_URL}/students/${encodeURIComponent(currentName)}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    document.getElementById('editForm').style.display = 'none';
+                    document.getElementById('searchName').value = '';
+                    currentName = '';
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Update Student Record';
+            }
+        });
+    </script>
+</body>
+</html>

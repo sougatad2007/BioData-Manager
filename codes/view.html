@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Student Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-card h2 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.05em;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .search-section {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .search-section h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .search-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-group:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .radio-group input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .radio-group label {
+            cursor: pointer;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            background: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .result-section h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            color: #1e293b;
+            line-height: 2;
+            font-size: 0.95em;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .student-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+        }
+
+        .student-card h4 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            color: #1e293b;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 25px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Main Menu</a>
+        
+        <div class="content-card">
+            <h2>👁 View Student Data</h2>
+            <p class="subtitle">Search for student records by name or filter by college</p>
+            
+            <div class="alert" id="alert"></div>
+            
+            <div class="search-section">
+                <h3>Search Options</h3>
+                <div class="search-options">
+                    <div class="radio-group">
+                        <input type="radio" name="searchType" id="byName" value="name" checked>
+                        <label for="byName">Search by Name</label>
+                    </div>
+                    <div class="radio-group">
+                        <input type="radio" name="searchType" id="byCollege" value="college">
+                        <label for="byCollege">Filter by College</label>
+                    </div>
+                </div>
+                
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Enter student name">
+                    <button class="btn" id="searchBtn">Search</button>
+                </div>
+            </div>
+            
+            <div class="loading" id="loading">🔍 Searching...</div>
+            
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h3 id="resultTitle">Search Results</h3>
+                <div id="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        const searchInput = document.getElementById('searchInput');
+        const byNameRadio = document.getElementById('byName');
+        const byCollegeRadio = document.getElementById('byCollege');
+
+        // Update placeholder based on search type
+        document.querySelectorAll('input[name="searchType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'name') {
+                    searchInput.placeholder = 'Enter student name';
+                } else {
+                    searchInput.placeholder = 'Enter college name';
+                }
+                document.getElementById('results').innerHTML = '';
+                document.getElementById('resultSection').style.display = 'none';
+            });
+        });
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type} active`;
+            setTimeout(() => {
+                alertDiv.classList.remove('active');
+            }, 5000);
+        }
+
+        function displayStudent(student) {
+            return `
+                <div class="student-card">
+                    <h4>👤 ${student.name}</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">College</span>
+                            <span class="info-value">${student.college}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Father's Name</span>
+                            <span class="info-value">${student.father}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Mother's Name</span>
+                            <span class="info-value">${student.mother}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">10th Marks</span>
+                            <span class="info-value">${student.marks10}%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">12th Marks</span>
+                            <span class="info-value">${student.marks12}%</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">10th School</span>
+                            <span class="info-value">${student.school10}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">12th School</span>
+                            <span class="info-value">${student.school12}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function searchData() {
+            const query = searchInput.value.trim();
+            const searchType = document.querySelector('input[name="searchType"]:checked').value;
+            const loading = document.getElementById('loading');
+            const resultSection = document.getElementById('resultSection');
+            const results = document.getElementById('results');
+            const resultTitle = document.getElementById('resultTitle');
+
+            if (!query) {
+                showAlert('Please enter a search term!', 'error');
+                return;
+            }
+
+            loading.classList.add('active');
+            resultSection.style.display = 'none';
+            results.innerHTML = '';
+
+            try {
+                if (searchType === 'name') {
+                    // Search by name
+                    const response = await fetch(`${API_URL}/students/${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    loading.classList.remove('active');
+
+                    if (response.ok) {
+                        resultTitle.textContent = 'Student Details';
+                        results.innerHTML = displayStudent(data);
+                        resultSection.style.display = 'block';
+                    } else {
+                        showAlert(data.error, 'error');
+                    }
+                } else {
+                    // Filter by college
+                    const response = await fetch(`${API_URL}/students/college/${encodeURIComponent(query)}`);
+                    const data = await response.json();
+
+                    loading.classList.remove('active');
+
+                    if (response.ok && data.length > 0) {
+                        resultTitle.textContent = `Students from ${query} (${data.length} found)`;
+                        results.innerHTML = data.map(student => displayStudent(student)).join('');
+                        resultSection.style.display = 'block';
+                    } else {
+                        showAlert(`No students found from college "${query}"`, 'error');
+                    }
+                }
+            } catch (error) {
+                loading.classList.remove('active');
+                showAlert('Error connecting to server. Please try again.', 'error');
+            }
+        }
+
+        document.getElementById('searchBtn').addEventListener('click', searchData);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchData();
+            }
+        });
+    </script>
+</body>
+</html>

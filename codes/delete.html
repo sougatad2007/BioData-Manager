@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Student Data</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 30px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-5px);
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .content-card h2 {
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.05em;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        .alert.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .warning-box {
+            background: #fef2f2;
+            border: 2px solid #fca5a5;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: #991b1b;
+        }
+
+        .warning-box h4 {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+        }
+
+        .warning-box p {
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .warning-box ul {
+            margin-top: 12px;
+            margin-left: 25px;
+        }
+
+        .warning-box li {
+            margin-bottom: 5px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1em;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .search-container input:focus {
+            outline: none;
+            border-color: #ef4444;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-red {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            background: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-red:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-red:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .content-card {
+                padding: 25px;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Main Menu</a>
+        
+        <div class="content-card">
+            <h2>🗑 Delete Student Data</h2>
+            <p class="subtitle">Permanently remove a student record from the database</p>
+            
+            <div class="alert" id="alert"></div>
+            
+            <div class="warning-box">
+                <h4>⚠️ Critical Warning</h4>
+                <p>Please read carefully before proceeding:</p>
+                <ul>
+                    <li>This action <strong>CANNOT be undone</strong></li>
+                    <li>The student record will be <strong>permanently deleted</strong></li>
+                    <li>All associated data will be removed from the database</li>
+                    <li>Make sure you have the correct student name</li>
+                </ul>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="deleteName" placeholder="Enter student name to delete">
+                <button class="btn-red" id="deleteBtn">Delete Record</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert ${type} active`;
+            setTimeout(() => {
+                alertDiv.classList.remove('active');
+            }, 5000);
+        }
+
+        document.getElementById('deleteBtn').addEventListener('click', async function() {
+            const name = document.getElementById('deleteName').value.trim();
+
+            if (!name) {
+                showAlert('Please enter a student name!', 'error');
+                return;
+            }
+
+            // Double confirmation for safety
+            const firstConfirm = confirm(`Are you absolutely sure you want to delete the record for "${name}"?\n\nThis action CANNOT be undone!`);
+            
+            if (!firstConfirm) {
+                return;
+            }
+
+            const secondConfirm = confirm(`Final confirmation: Delete "${name}"'s record permanently?`);
+            
+            if (!secondConfirm) {
+                return;
+            }
+
+            const btn = document.getElementById('deleteBtn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+
+            try {
+                const response = await fetch(`${API_URL}/students/${encodeURIComponent(name)}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showAlert(result.message, 'success');
+                    document.getElementById('deleteName').value = '';
+                } else {
+                    showAlert(result.error, 'error');
+                }
+            } catch (error) {
+                showAlert('Error connecting to server. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Delete Record';
+            }
+        });
+
+        // Allow Enter key to trigger delete
+        document.getElementById('deleteName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('deleteBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>
